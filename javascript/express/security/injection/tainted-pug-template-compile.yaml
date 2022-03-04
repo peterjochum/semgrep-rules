@@ -1,0 +1,24 @@
+rules:
+- id: tainted-pug-template-compile
+  message: User data from `$USERDATA` is being compiled into the template, which can lead to a Server Side Template Injection (SSTI) vulnerability.
+  languages:
+    - javascript
+    - typescript
+  severity: WARNING
+  mode: taint
+  pattern-sources:
+    - patterns:
+      - pattern-inside: |
+          models.$MODEL.$FUNC(...).then($USERDATA => { ... })
+      - pattern: $USERDATA
+  pattern-sinks:
+    - pattern: $PUG.compile(...)
+  metadata:
+    category: security
+    technology:
+      - javascript
+      - typescript
+      - pug
+    owasp:
+      - A01:2017 - Injection
+      - A03:2021 - Injection
