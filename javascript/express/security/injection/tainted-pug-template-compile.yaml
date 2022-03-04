@@ -13,6 +13,9 @@ rules:
       - pattern: $USERDATA
   pattern-sinks:
     - pattern: $PUG.compile(...)
+    - pattern: $PUG.compileClient(...)
+    - pattern: $PUG.compileClientWithDependenciesTracked(...)
+    - pattern: $PUG.render(...)
   metadata:
     category: security
     technology:
