@@ -1,9 +1,10 @@
 rules:
-  - id: angular-bypasssecuritytrust
+  - id: angular-bypass-security-trust
     message: >-
       Bypassing the built-in sanitization could expose the application to cross-site scripting (XSS).
     languages:
       - typescript
+      - javascript
     severity: WARNING
     metadata:
       references:
@@ -23,6 +24,7 @@ rules:
       The output is not sanitized when calling with SecurityContext.NONE.
     languages:
       - typescript
+      - javascript
     severity: WARNING
     metadata:
       references:
@@ -30,3 +32,4 @@ rules:
       category: security
       technology:
         - angular
+

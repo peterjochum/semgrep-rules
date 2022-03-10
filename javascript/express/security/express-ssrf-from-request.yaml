@@ -1,0 +1,61 @@
+rules:
+  - id: express-ssrf-from-request
+    message: >-
+      Request body and request parameter data is untrustworthy. Passing it to a request constructing function can lead to Server-Side Request Forgery (SSRF) if the data isn't sanitized properly beforehand
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      category: security
+      technology:
+        - express
+    mode: taint
+    pattern-sources:
+      - patterns:
+        # - pattern-either: 
+        #   - pattern-inside: | This whole block is commented out because importing in this way isn't supproted by Semgrep yet
+        #       import {..., Request, ...} from 'express'
+        #       ...
+        #   - pattern-inside: |
+        #       import Request from 'express'
+        #       ...
+        - pattern-either:
+            - pattern: $EREQ.body
+            - pattern: $EREQ.query
+            - pattern: $EREQ.param('...')
+            - pattern: $EREQ.params('...')
+    pattern-sinks:
+      - patterns:
+        - pattern-either:
+          - pattern-inside: |
+              const $REQ = require('request')
+              ...
+          - pattern-inside: |
+              var $REQ = require('request')
+              ...
+        - pattern-either:
+            - pattern: $REQ.get(...)
+            - pattern: $REQ.post(...)
+            - pattern: $REQ.put(...)
+            - pattern: $REQ.patch(...)
+            - pattern: $REQ.del(...)
+            - pattern: $REQ.delete(...)
+            - pattern: $REQ.head(...)
+            - pattern: request(...)
+    # Other imports worth considering if this rule is too noisy
+    # patterns:
+    #   - pattern-either:
+    #     - pattern-inside: |
+    #         $EXP = require('express');
+    #         ...
+    #     - pattern-inside: |
+    #         import Request from 'express'
+    #         ...
+    #     - pattern-inside: |
+    #         import {..., Request, ...} from 'express'
+    #         ...
+    #     - pattern-inside: |
+    #         const $REQ = require('request')
+    #         ...
