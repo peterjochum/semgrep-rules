@@ -15,6 +15,7 @@ module.exports = function profileImageUrlUpload () {
       if (url.match(/(.)*solve\/challenges\/server-side(.)*/) !== null) req.app.locals.abused_ssrf_bug = true
       const loggedInUser = security.authenticatedUsers.get(req.cookies.token)
       if (loggedInUser) {
+        // ruleid: express-ssrf-from-request
         const imageRequest = request
           .get(url)
           .on('error', function (err) {
