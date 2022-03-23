@@ -1,0 +1,23 @@
+rules:
+  - id: express-check-directory-listing
+    message: >-
+      Directory listing/indexing is enabled, which may lead to disclosure of sensitive directories and filenames.
+      If you need directory listing enabled, ensure that sensitive files won't show up and are inaccessible by directly typing the URL.
+    severity: WARNING
+    languages: [javascript, typescript]
+    metadata:
+      cwe: "CWE-522: Insufficiently Protected Credentials"
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A03:2017 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+        - "A06:2017 - Security Misconfiguration"
+      category: security
+      technology:
+        - express
+    patterns:
+      - pattern-inside: |
+          $SERVEINDEX = require('serve-index')
+          ...
+      - pattern:
+          $APP.use(..., $SERVEINDEX(...), ...)
