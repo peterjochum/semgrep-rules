@@ -1,0 +1,35 @@
+rules:
+  - id: express-check-rate-limiting-bypass-taint
+    mode: taint
+    pattern-sources:
+      - pattern: headers
+      - pattern: header
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  new RateLimit( ... )
+              - pattern-inside: |
+                  new rateLimit( ... )
+              - pattern-inside: |
+                  RateLimit( ... )
+              - pattern-inside: |
+                  rateLimit( ... )
+          - pattern: |
+              keyGenerator(...) { ... }
+    message: Using arbitrary HTTP headers as unique identifiers within a rate-limit
+      mechanism may be vulnerable tospoofing, as an attacker could easily set custom
+      headers to appear as a new person. Forcing them to use their IP address as an
+      identifier would at least make it harder for them to brute force by making
+      them change their actual IP address everytime.
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      technology:
+        - express
+      owasp:
+        - A06:2017 - Security Misconfiguration
+        - A05:2021 - Security Misconfiguration
+    severity: WARNING

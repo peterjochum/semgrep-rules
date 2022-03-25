@@ -1,0 +1,47 @@
+rules:
+  - id: mongo-inject-from-request
+    languages:
+      - javascript
+      - typescript
+    message: Putting request data into a mongo query can leadto a NoSQL Injection.
+      Be sure to properly sanitize thedata if you absolutely must pass request data
+      into a query.
+    mode: taint
+    pattern-sources:
+      - pattern: |
+          ($REQ: Request)
+    pattern-sinks:
+      - patterns:
+          - patterns:
+              - pattern-inside: |
+                  $DB = require('$IMPORT')
+                  ...
+              - metavariable-regex:
+                  metavariable: $IMPORT
+                  regex: .*mongodb$
+          - pattern-not-inside: |
+              ...
+              $APP.use(mongoSanitize())
+              ...
+          - pattern-either:
+              - pattern: $DB. ... .find(...)
+              - pattern: $DB. ... .findOne(...)
+              - pattern: $DB. ... .where(...)
+              - pattern: $DB. ... .mapReduce(...)
+              - pattern: $DB. ... .group(...)
+    pattern-sanitizers:
+      - patterns:
+          - pattern-inside: |
+              const $MS = require('express-mongo-sanitize')
+              ...
+          - pattern: $MS.sanitize(...)
+    metadata:
+      category: security
+      technology:
+        - mongodb
+      owasp:
+        - A01:2017 - Injection
+        - A03:2021 - Injection
+      references:
+        - https://owasp.org/www-pdf-archive/GOD16-NOSQL.pdf
+    severity: WARNING
