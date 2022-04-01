@@ -1,0 +1,28 @@
+rules:
+  - id: express-jsonp-usage
+    message: |
+      Found usage of `jsonp()`. Be careful using this function, especially in a context that handles sensitive information, as it can lead to Cross Site Request Forgery (CSRF) and/or information leak. Consider using regular `json()` instead.
+    languages: [javascript, typescript]
+    severity: WARNING
+    metadata:
+      category: security
+      references: |
+        - https://securitycafe.ro/2017/01/18/practical-jsonp-injection/
+      cwe:
+        - "CWE-352: Cross-Site Request Forgery (CSRF)"
+        - "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A03:2017 - Sensitive Data Exposure"
+    patterns:
+      - pattern-either:
+          - pattern-inside: function ... ($REQ, $RES) {...}
+          - pattern-inside: function ... ($REQ, $RES, $NEXT) {...}
+          - pattern-inside: $APP.get(..., function $FUNC($REQ, $RES) {...})
+          - pattern-inside: $APP.post(..., function $FUNC($REQ, $RES) {...})
+          - pattern-inside: $APP.put(..., function $FUNC($REQ, $RES) {...})
+          - pattern-inside: $APP.head(..., function $FUNC($REQ, $RES) {...})
+          - pattern-inside: $APP.delete(..., function $FUNC($REQ, $RES) {...})
+          - pattern-inside: $APP.options(..., function $FUNC($REQ, $RES) {...})
+      - pattern: |
+          $RES.jsonp($RESPONSE)
