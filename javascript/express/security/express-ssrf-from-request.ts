@@ -29,11 +29,16 @@ module.exports = function profileImageUrlUpload () {
               models.User.findByPk(loggedInUser.data.id).then(user => { return user.update({ profileImage: `/assets/public/images/uploads/${loggedInUser.data.id}.${ext}` }) }).catch((error: Error) => { next(error) })
             } else models.User.findByPk(loggedInUser.data.id).then(user => { return user.update({ profileImage: url }) }).catch((error: Error) => { next(error) })
           })
+
+        // ok
+        const imageRequest2 = request
+          .get('/profile')
+          // other stuff
       } else {
         next(new Error('Blocked illegal activity by ' + req.connection.remoteAddress))
       }
     }
+
     res.location(process.env.BASE_PATH + '/profile')
-    res.redirect(process.env.BASE_PATH + '/profile')
   }
 }
