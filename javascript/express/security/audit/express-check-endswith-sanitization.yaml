@@ -1,0 +1,45 @@
+rules:
+  - id: express-endswith-sanitization
+    message: >
+      It looks like endsWith() is being used on `$REQ` for filename sanitization. Those functions are not sound sanitizers and can easily be bypassed with techniques such as null byte injection. $REQ $THING
+    languages:
+      - javascript
+      - typescript
+    severity: WARNING
+    metadata:
+      category: security
+      cwe:
+        - "CWE-73: External Control of File Name or Path"
+        - "CWE-706: Use of Incorrectly-Resolved Name or Reference"
+      owasp:
+        - A01:2021 - Broken Access Control
+        - A05:2017 - Broken Access Control
+      references:
+        - https://portswigger.net/blog/null-byte-attacks-are-alive-and-well
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: function ... ($REQ, $RES) {...}
+              - pattern-inside: function ... ($REQ, $RES, $NEXT) {...}
+              - pattern-inside: $APP.get(..., function $FUNC($REQ, $RES) {...})
+              - pattern-inside: $APP.get(..., function $FUNC($REQ, $RES, $NEXT) {...})
+              - pattern-inside: $APP.post(..., function $FUNC($REQ, $RES) {...})
+              - pattern-inside: $APP.post(..., function $FUNC($REQ, $RES, $NEXT) {...})
+              - pattern-inside: $APP.put(..., function $FUNC($REQ, $RES) {...})
+              - pattern-inside: $APP.put(..., function $FUNC($REQ, $RES, $NEXT) {...})
+              - pattern-inside: $APP.head(..., function $FUNC($REQ, $RES) {...})
+              - pattern-inside: $APP.head(..., function $FUNC($REQ, $RES, $NEXT) {...})
+              - pattern-inside: $APP.delete(..., function $FUNC($REQ, $RES) {...})
+              - pattern-inside: $APP.delete(..., function $FUNC($REQ, $RES, $NEXT) {...})
+              - pattern-inside: $APP.options(..., function $FUNC($REQ, $RES) {...})
+              - pattern-inside: $APP.options(..., function $FUNC($REQ, $RES, $NEXT) {...})
+          - pattern: $REQ
+    pattern-sanitizers:
+      - not_conflicting: true
+        patterns:
+          - pattern: $F(...)
+          - pattern-not: $REQ.endsWith(...)
+          - pattern-not: endsWith($REQ, $THING)
+    pattern-sinks:
+      - pattern: $RES.sendFile(...)
