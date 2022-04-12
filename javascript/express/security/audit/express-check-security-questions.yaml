@@ -1,9 +1,6 @@
 rules:
   - id: express-check-security-questions
-    pattern-inside: |
-      password
-      ...
-    pattern-regex: (security.*question)
+    pattern-regex: (security( )?question)
     message: Using a password reset mechanism based on sending users a one-time link to their registered email address is preferable to one based on security questions, as that kind of information can typically easily be found on the internet.
     languages:
       - javascript
@@ -15,4 +12,4 @@ rules:
       owasp:
         - A06:2017 - Security Misconfiguration
         - A05:2021 - Security Misconfiguration
-    severity: WARNING
+    severity: INFO

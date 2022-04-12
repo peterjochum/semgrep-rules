@@ -29,6 +29,7 @@ module.exports = function resetPassword () {
             next(error)
           })
         } else {
+          // ruleid: express-check-security-questions
           res.status(401).send(res.__('Wrong answer to security question.'))
         }
       }).catch((error: Error) => {
