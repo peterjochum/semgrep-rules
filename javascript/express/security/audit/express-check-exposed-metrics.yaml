@@ -2,7 +2,7 @@ rules:
 - id: express-check-exposed-metrics
   message: "Looks like a metrics route is being exposed. Consider moving this to an internal-facing application if not already."
   languages: [javascript, typescript]
-  severity: WARNING
+  severity: INFO
   metadata:
     category: security
     cwe:
