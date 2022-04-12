@@ -17,11 +17,12 @@ rules:
                   rateLimit( ... )
           - pattern: |
               keyGenerator(...) { ... }
-    message: Using arbitrary HTTP headers as unique identifiers within a rate-limit
-      mechanism may be vulnerable tospoofing, as an attacker could easily set custom
-      headers to appear as a new person. Forcing them to use their IP address as an
-      identifier would at least make it harder for them to brute force by making
-      them change their actual IP address everytime.
+    message:
+      Using arbitrary HTTP headers, in this case through `keyGenerator()`, as unique 
+      identifiers within a rate-limit mechanism may be vulnerable to spoofing, as an
+      attacker could easily set custom headers to appear as a new person. Forcing them
+      to use their IP address as an identifier would at least make it harder for them
+      to brute force by making them change their actual IP address everytime.
     languages:
       - javascript
       - typescript
