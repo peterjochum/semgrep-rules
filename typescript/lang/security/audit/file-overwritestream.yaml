@@ -18,13 +18,9 @@ rules:
               - pattern: $PATH.normalize(...)
               - pattern: $PATH.basename(...)
       - patterns:
-          - pattern-either:
-              - pattern-inside: |
-                  $FS = require('fs')
-                  ...
-              - pattern-inside: |
-                  $FS = require('fs')
-                  ...
+          - pattern-inside: |
+              $FS = require('fs')
+              ...
           - pattern-either:
               - pattern: $FS.realpath(...)
               - pattern: $FS.realpathSync(...)
@@ -35,7 +31,7 @@ rules:
           - pattern: sanitize(...)
     pattern-sinks:
       - pattern: $FS.createWriteStream(...)
-    message: Passing '$SOURCE' into createWriteStream() without any sanitization. Possible avenue for path traversal / arbitrary file overwrite.
+    message: Passing '$SOURCE' into createWriteStream() without any sanitization is a possible avenue for path traversal/arbitrary file overwrite.
     languages:
       - typescript
     severity: WARNING
