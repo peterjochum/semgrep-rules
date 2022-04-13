@@ -1,0 +1,27 @@
+rules: 
+  - id: express-check-csurf-middleware-usage
+    message: "It is recommended to use either the `csrf` or `csurf` middleware to protect your express app against Cross-Site Request Forgery (CSRF) attacks."
+    languages: [javascript, typescript]
+    severity: INFO
+    metadata:
+      category: security
+      references: |
+        - https://www.npmjs.com/package/csurf
+        - https://www.npmjs.com/package/csrf
+      cwe:
+        - "CWE-352: Cross-Site Request Forgery (CSRF)"
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2017 - Broken Access Control"
+    patterns:
+      - pattern-inside: |
+          $EXPRESS = require('express')
+          ...
+      - pattern-not-inside: |
+          require('csurf')
+          ...
+      - pattern-not-inside: | # filter out applications that use this alternate csrf library
+          require('csrf')
+          ...
+      - pattern: |
+          $APP = $EXPRESS()
