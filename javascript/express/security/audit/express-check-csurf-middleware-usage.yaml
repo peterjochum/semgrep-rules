@@ -18,7 +18,13 @@ rules:
           $EXPRESS = require('express')
           ...
       - pattern-not-inside: |
+          import {$CSRF} from 'csurf'
+          ...
+      - pattern-not-inside: |
           require('csurf')
+          ...
+      - pattern-not-inside: | # filter out applications that use this alternate csrf library
+          import {$CSRF} from 'csrf'
           ...
       - pattern-not-inside: | # filter out applications that use this alternate csrf library
           require('csrf')
