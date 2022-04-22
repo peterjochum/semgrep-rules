@@ -1,23 +1,43 @@
 rules:
-  - id: express-check-directory-listing
-    message: >-
-      Directory listing/indexing is enabled, which may lead to disclosure of sensitive directories and filenames.
-      If you need directory listing enabled, ensure that sensitive files won't show up and are inaccessible by directly typing the URL.
+  - id: javascript-check-directory-listing
+    message: Directory listing/indexing is enabled, which may lead to disclosure of
+      sensitive directories and files. It is recommended to disable directory
+      listing unless it is a public resource. If you need directory listing,
+      ensure that sensitive files are inaccessible when querying the resource.
     severity: WARNING
-    languages: [javascript, typescript]
+    languages:
+      - javascript
+      - typescript
     metadata:
-      cwe: "CWE-522: Insufficiently Protected Credentials"
+      cwe: "CWE-548: Exposure of Information Through Directory Listing"
       owasp:
-        - "A01:2021 - Broken Access Control"
-        - "A03:2017 - Broken Access Control"
-        - "A05:2021 - Security Misconfiguration"
-        - "A06:2017 - Security Misconfiguration"
+        - A05:2021 - Security Misconfiguration
+        - A06:2017 - Security Misconfiguration
       category: security
       technology:
         - express
     patterns:
-      - pattern-inside: |
-          $SERVEINDEX = require('serve-index')
-          ...
-      - pattern:
-          $APP.use(..., $SERVEINDEX(...), ...)
+      - pattern-either:
+          - pattern: |
+              $APP.use(require('serve-index')(...))
+          - patterns:
+              - pattern-either:
+                  - pattern-inside: |
+                      $SERVEINDEX = require('serve-index')
+                      ...
+                  - pattern-inside: |
+                      import $SERVEINDEX from 'serve-index'
+                      ...
+                  - pattern-inside: |
+                      import * as $SERVEINDEX from 'serve-index'
+                      ...
+              - pattern-either:
+                  - patterns:
+                      - pattern-inside: |
+                          $VALUE = $SERVEINDEX(...)
+                          ...
+                      - pattern-either:
+                          - pattern: |
+                              $VALUE(...)
+                  - pattern: |
+                      $APP.use(<... $SERVEINDEX(...) ...>)

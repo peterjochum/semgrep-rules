@@ -6,20 +6,20 @@ function handleXmlUpload ({ file }: Request, res: Response, next: NextFunction) 
         const sandbox = { libxml, data }
         vm.createContext(sandbox)
         
-        // ruleid: express-libxml-parse-noent
+        // ruleid: express-libxml-vm-noent
         const xmlDoc = vm.runInContext('libxml.parseXml(data, { noblanks: true, noent: true, nocdata: true })', sandbox, { timeout: 2000 })
 
-        // ruleid: express-libxml-parse-noent
+        // ruleid: express-libxml-vm-noent
         const xmlDoc = vm.runInContext("libxml.parseXml(data, { noblanks: true, noent: true, nocdata: true })", sandbox, { timeout: 2000 })
 
-        // ruleid: express-libxml-parse-noent
+        // ruleid: express-libxml-vm-noent
         libxml.parseXml(data, { noblanks: true, noent: true, nocdata: true })
 
         const xml_opts = { noblanks: true, noent: true, nocdata: true }
-        // ruleid: express-libxml-parse-noent
+        // ruleid: express-libxml-vm-noent
         libxml.parseXml(data, xml_opts)
 
-        // ok
+        // ok: express-libxml-vm-noent
         libxml.parseXml(data, { noblanks: true, nocdata: true })
 
         const xmlString = xmlDoc.toString(false)

@@ -1,5 +1,5 @@
 rules:
-  - id: express-libxml-parse-noent
+  - id: express-libxml-vm-noent
     message:
       Detected use of parseXml() function with the `noent` field set to `true`.
       This can lead to an XML External Entities (XXE) attack if untrusted data

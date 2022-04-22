@@ -8,5 +8,5 @@ app.use('/ftp', serveIndexMiddleware, serveIndex('ftp', { icons: true }));
 // ruleid: express-check-directory-listing
 app.use('/ftp', serveIndex('ftp', { icons: true }));
 
-// ok
+// ok: express-check-directory-listing
 app.use(bodyParser.text({ type: '*/*' }));
