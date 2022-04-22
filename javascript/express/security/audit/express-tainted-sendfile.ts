@@ -36,7 +36,7 @@ module.exports = function servePublicFiles2 () {
   function verify2 (file, res, next) {
     if (file && (endsWithAllowlistedFileType(file) || (file === 'incident-support.kdbx'))) {
       // ok
-      res.sendFile(path.resolve('ftp/'))
+      res.sendFile(path.resolve('ftp/a.txt'))
     } else {
       res.status(403)
       next(new Error('Only .md and .pdf files are allowed!'))

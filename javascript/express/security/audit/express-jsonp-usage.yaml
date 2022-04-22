@@ -1,7 +1,10 @@
 rules:
   - id: express-jsonp-usage
-    message: |
-      Found usage of `jsonp()`. Be careful using this function, especially in a context that handles sensitive information, as it can lead to Cross Site Request Forgery (CSRF) and/or information leak. Consider using regular `json()` instead.
+    message:
+      Detected usage of `jsonp()`. Be careful using this function, especially in
+      a context that handles sensitive information, as it can lead to
+      Cross Site Request Forgery (CSRF) and/or leaking sensitive information.
+      Consider using regular `json()` instead.
     languages: [javascript, typescript]
     severity: WARNING
     metadata:

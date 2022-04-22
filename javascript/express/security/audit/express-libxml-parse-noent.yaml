@@ -1,7 +1,9 @@
 rules:
   - id: express-libxml-parse-noent
-    message: The `noent` field is set to `true` in a call ot libxml.parseXml(). This
-      can lead to an XML External Entities (XXE) attack.
+    message:
+      Detected use of parseXml() function with the `noent` field set to `true`.
+      This can lead to an XML External Entities (XXE) attack if untrusted data
+      is passed into it.
     metadata:
       owasp: "A4: XML External Entities (XXE)"
       cwe: "CWE-611: Improper Restriction of XML External Entity Reference"

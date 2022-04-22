@@ -1,6 +1,10 @@
 rules:
   - id: detect-notevil-usage
-    message: The `notevil` package is unmaintained and has vulnerabilities. Consider switching to an alternative that's still being maintained.
+    message:
+      Detected usage of the `notevil` package, which is unmaintained and has vulnerabilities.
+      Using any sort of `eval()` functionality can be very dangerous, but if you must,
+      the `eval` package is an up to date alternative. Be sure that only trusted input
+      reaches an `eval()` function.
     languages:
       - javascript
       - typescript

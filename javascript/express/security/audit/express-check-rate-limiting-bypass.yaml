@@ -8,21 +8,16 @@ rules:
       - patterns:
           - pattern-either:
               - pattern-inside: |
-                  new RateLimit( ... )
-              - pattern-inside: |
-                  new rateLimit( ... )
-              - pattern-inside: |
                   RateLimit( ... )
               - pattern-inside: |
                   rateLimit( ... )
           - pattern: |
               keyGenerator(...) { ... }
     message:
-      Using arbitrary HTTP headers, in this case through `keyGenerator()`, as unique 
-      identifiers within a rate-limit mechanism may be vulnerable to spoofing, as an
-      attacker could easily set custom headers to appear as a new person. Forcing them
-      to use their IP address as an identifier would at least make it harder for them
-      to brute force by making them change their actual IP address everytime.
+      Detected use of `keyGenerator()` within a RateLimit object, which may allow an attacker to
+      bypass rate limiting by spoofing their identity with custom headers. It is recommended to 
+      choose an attribute of the request that's best suited as an identifier for your application
+      and use that instead.
     languages:
       - javascript
       - typescript
@@ -33,4 +28,7 @@ rules:
       owasp:
         - A06:2017 - Security Misconfiguration
         - A05:2021 - Security Misconfiguration
+      references:
+        - https://cloud.google.com/architecture/rate-limiting-strategies-techniques
+        - https://owasp.org/www-community/controls/Blocking_Brute_Force_Attacks 
     severity: WARNING
