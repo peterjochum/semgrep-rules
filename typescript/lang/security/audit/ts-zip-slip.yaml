@@ -1,0 +1,56 @@
+rules:
+  - id: ts-zip-slip
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - patterns:
+              - patterns:
+                  - pattern-inside: |
+                      $UNZIPPER = require('$LIB')
+                      ...
+                  - metavariable-regex:
+                      metavariable: $LIB
+                      regex: (unzipper|unzip)
+              - pattern-inside: |
+                  $FS.createReadStream(...). ... .pipe($UNZIPPER.$READFUNC()). ... .on('entry', function($SOURCE) {
+                      ...
+                  })
+              - metavariable-regex:
+                  metavariable: $READFUNC
+                  regex: (Parse|ParseOne)
+          - pattern: $SOURCE
+    pattern-sanitizers:
+      - patterns:
+          - pattern-inside: |
+              $PATH = require('path')
+              ...
+          - pattern: $PATH.basename(...)
+      - patterns:
+          - pattern-inside: |
+              $FS = require('fs')
+              ...
+          - pattern-either:
+              - pattern: $FS.realpath(...)
+              - pattern: $FS.realpathSync(...)
+      - patterns:
+          - pattern-inside: |
+              require('sanitize-filename')
+              ...
+          - pattern: sanitize(...)
+    pattern-sinks:
+      - patterns:
+        - pattern-inside: |
+            $FS.$WRITEFUNC($DEST, ...)
+        - metavariable-regex:
+            metavariable: $WRITEFUNC
+            regex: (createWriteStream|writeFile|writeFileSync)
+        - pattern: $DEST
+    message: >
+      The variable `$SOURCE` is read directly from the contents of a zip archive
+      and passed into `$WRITEFUNC()` without any sanitization. This can result in an
+      arbitrary file write or a zip slip vulnerability. It is recommened to sanitize
+      `$SOURCE` using a function such as `path.basename()` or use a filename sanitization
+      library such as `sanitize-filename`.
+    languages:
+      - typescript
+    severity: WARNING

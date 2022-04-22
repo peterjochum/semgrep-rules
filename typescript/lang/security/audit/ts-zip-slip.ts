@@ -1,7 +1,10 @@
+import fs = require('fs')
 const path = require('path')
-require('sanitize-filename')
+const unzip = require('unzip')
+const unzipper = require('unzipper')
+const sanitize = require('sanitize-filename')
 
-function handleZipFileUpload ({ file }: Request, res: Response, next: NextFunction) {
+function unzipperBad ({ file }: Request, res: Response, next: NextFunction) {
   if (utils.endsWith(file?.originalname.toLowerCase(), '.zip')) {
     if (file?.buffer) {
       const buffer = file.buffer
@@ -18,11 +21,11 @@ function handleZipFileUpload ({ file }: Request, res: Response, next: NextFuncti
                 const writefile = entry.path
                 const absolutePath = path.resolve('uploads/complaints/' + writefile)
                 if (absolutePath.includes(path.resolve('.'))) {
-                  const writefile_sanitized = path.resolve(writefile)
+                  const writefile_sanitized = path.basename(writefile)
                   const writefile_sanitized2 = sanitize(writefile)
-                  // ruleid: ts-file-overwrite
+                  // ruleid: ts-zip-slip
                   entry.pipe(fs.createWriteStream('uploads/complaints/' + writefile))
-                  
+
                   // ok
                   entry.pipe(fs.createWriteStream('uploads/complaints/' + writefile_sanitized))
 
@@ -39,4 +42,28 @@ function handleZipFileUpload ({ file }: Request, res: Response, next: NextFuncti
   }
 }
 
+function unzipBad ({ file }: Request, res: Response, next: NextFunction) {
+  fs.createReadStream(file)
+    .pipe(unzip.Parse())
+    .on('entry', function (entry) {
+      var fileName = entry.path;
+      if (fileName === "this IS the file I'm looking for") {
+        // ruleid: ts-zip-slip
+        entry.pipe(fs.createWriteStream('output/path' + fileName));
+      } else {
+        entry.autodrain();
+      }
+    });
 
+  fs.createReadStream(file)
+    .pipe(unzip.Parse())
+    .on('entry', function (entry) {
+      var fileName = entry.path;
+      if (fileName === "this IS the file I'm looking for") {
+        // ok
+        entry.pipe(fs.createWriteStream('output/path'));
+      } else {
+        entry.autodrain();
+      }
+    });
+}
